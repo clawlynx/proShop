@@ -42,13 +42,30 @@ export const getOrderById = async (req, res) => {
 };
 
 export const updateOrderToPaid = async (req, res) => {
-  res.send("oredr paid");
+  const order = await Order.findById(req.params.id);
+  if (!order) throw new NotFoundError("No order found");
+  order.isPaid = true;
+  order.paidAt = Date.now();
+  order.paymentResult = {
+    id: req.body.id,
+    status: req.body.status,
+    update_time: req.body.update_time,
+    email_address: req.body.payer.email_address,
+  };
+  const updatedOrder = await order.save();
+  res.status(200).json(updatedOrder);
 };
 
 export const updateOrderToDelivered = async (req, res) => {
-  res.send("delivered");
+  const order = await Order.findById(req.params.id);
+  if (!order) throw new NotFoundError("no order found");
+  order.isDelivered = true;
+  order.deliveredAt = Date.now();
+  const updatedOrder = await order.save();
+  res.status(200).json(updatedOrder);
 };
 
 export const getAllUsersOrders = async (req, res) => {
-  res.send("all users orders");
+  const orders = await Order.find({}).populate("user", "id name");
+  res.status(200).json(orders);
 };

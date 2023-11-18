@@ -5,11 +5,23 @@ import Product from "../components/Product";
 import { useGetProductsQuery } from "../slices/productsApiSlice";
 import Loading from "../components/Loading";
 import Message from "../components/Message";
+import { Link, useParams } from "react-router-dom";
+import Paginate from "../components/Paginate";
 
 function HomePage() {
-  const { data: products, isLoading, error } = useGetProductsQuery();
+  const { pageNumber, keyword } = useParams();
+  console.log(pageNumber);
+  const { data, isLoading, error } = useGetProductsQuery({
+    pageNumber,
+    keyword,
+  });
   return (
     <>
+      {keyword && (
+        <Link to={"/"} className="btn btn-secondary mb-3">
+          Go back
+        </Link>
+      )}
       {isLoading ? (
         <Loading />
       ) : error ? (
@@ -20,7 +32,7 @@ function HomePage() {
         <>
           <h1>Latest Products</h1>
           <Row>
-            {products.map((product) => {
+            {data.products.map((product) => {
               return (
                 <Col key={product._id} sm={12} md={6} lg={4} xl={3}>
                   <Product product={product} />
@@ -28,6 +40,11 @@ function HomePage() {
               );
             })}
           </Row>
+          <Paginate
+            page={data.page}
+            pages={data.pages}
+            keyword={keyword ? keyword : null}
+          />
         </>
       )}
     </>

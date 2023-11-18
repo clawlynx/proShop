@@ -65,7 +65,6 @@ export const validateUpdateProfileInput = withValidationErrors([
         throw new BadRequestError("email already exists");
       }
     }),
-  body("password").notEmpty().withMessage("password is required"),
 ]);
 
 export const validateOrderInput = withValidationErrors([
@@ -84,4 +83,30 @@ export const validateOrderInput = withValidationErrors([
   body("taxPrice").notEmpty().withMessage("taxprice is required"),
   body("shippingPrice").notEmpty().withMessage("shipping price is required"),
   body("totalPrice").notEmpty().withMessage("total price requuired"),
+]);
+
+export const validateEditProductInput = withValidationErrors([
+  body("name").notEmpty().withMessage("name is required"),
+  body("price").notEmpty().withMessage("price is required"),
+  body("image").notEmpty().withMessage("image is required"),
+  body("brand").notEmpty().withMessage("brand is required"),
+  body("category").notEmpty().withMessage("category is required"),
+  body("countInStock").notEmpty().withMessage("count in stock is required"),
+  body("description").notEmpty().withMessage("description is required"),
+]);
+
+export const validateUpdateUserEmailInput = withValidationErrors([
+  body("email")
+    .notEmpty()
+    .withMessage("email is required")
+    .isEmail()
+    .withMessage("Invalid email format")
+    .custom(async (email, { req }) => {
+      const user = await User.findOne({ email });
+      if (user && user._id.toString() !== req.user._id.toString()) {
+        console.log(user._id);
+        console.log(req.user.userId);
+        throw new BadRequestError("email already exists");
+      }
+    }),
 ]);

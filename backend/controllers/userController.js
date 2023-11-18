@@ -1,4 +1,8 @@
-import { NotFoundError, UnauthenticatedError } from "../errors/customErrors.js";
+import {
+  NotFoundError,
+  UnauthenticatedError,
+  UnauthorizedError,
+} from "../errors/customErrors.js";
 import User from "../models/UserModel.js";
 import { comparePassword, hashPassword } from "../utils/passwordutils.js";
 import { createJWT } from "../utils/tokenutils.js";
@@ -70,7 +74,9 @@ export const updateUserProfile = async (req, res) => {
   if (!user) throw new NotFoundError("no user found");
   user.name = req.body.name;
   user.email = req.body.email;
-  user.password = await hashPassword(req.body.password);
+  if (req.body.password !== "") {
+    user.password = await hashPassword(req.body.password);
+  }
   await user.save();
   res.status(200).json({
     _id: user._id,
@@ -81,17 +87,35 @@ export const updateUserProfile = async (req, res) => {
 };
 
 export const getAllUsers = async (req, res) => {
-  res.send("get all users");
+  const users = await User.find({});
+  res.status(200).json(users);
 };
 
 export const deleteUser = async (req, res) => {
-  res.send("delete user");
+  const user = await User.findById(req.params.id);
+  if (!user) throw new NotFoundError("No user found");
+  if (user.isAdmin) throw new UnauthorizedError("Cannot delete admin");
+  await User.deleteOne({ _id: user._id });
+  res.status(200).json({ message: "User deleted successfully" });
 };
 
 export const getSingleUser = async (req, res) => {
-  res.send("get single user");
+  const user = await User.findById(req.params.id).select("-password");
+  if (!user) throw new NotFoundError("No user found");
+  res.status(200).json(user);
 };
 
 export const updateSingleUser = async (req, res) => {
-  res.send("update single user");
+  const user = await User.findById(req.params.id);
+  if (!user) throw new NotFoundError("No user found");
+  user.name = req.body.name || user.name;
+  user.email = req.body.email || user.email;
+  user.isAdmin = Boolean(req.body.isAdmin);
+  const updatedUser = await user.save();
+  res.status(200).json({
+    _id: updatedUser._id,
+    name: updatedUser.name,
+    email: updatedUser.email,
+    isAdmin: updatedUser.isAdmin,
+  });
 };

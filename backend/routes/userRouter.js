@@ -14,6 +14,7 @@ import {
   validateLoginInputs,
   validateRegisterInput,
   validateUpdateProfileInput,
+  validateUpdateUserEmailInput,
 } from "../middleware/validationMiddleware.js";
 import {
   authenticateUser,
@@ -35,6 +36,12 @@ router.put(
 );
 router.delete("/:id", authenticateUser, checkForAdmin, deleteUser);
 router.get("/:id", authenticateUser, checkForAdmin, getSingleUser);
-router.put("/:id", authenticateUser, checkForAdmin, updateSingleUser);
+router.put(
+  "/:id",
+  authenticateUser,
+  checkForAdmin,
+
+  updateSingleUser
+);
 
 export default router;
