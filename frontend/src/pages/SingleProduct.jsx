@@ -21,6 +21,7 @@ import Loading from "../components/Loading";
 import Message from "../components/Message";
 import { useDispatch, useSelector } from "react-redux";
 import { addToCart } from "../slices/cartSlice";
+import Meta from "../components/Meta";
 
 function SingleProduct() {
   const [qty, setQty] = useState(1);
@@ -78,6 +79,7 @@ function SingleProduct() {
         </Message>
       ) : (
         <>
+          <Meta title={product.name} />
           <Row>
             <Col md={5}>
               <Image src={product?.image} alt={product?.name} fluid />

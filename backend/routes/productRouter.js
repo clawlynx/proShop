@@ -6,6 +6,7 @@ import {
   editProduct,
   getAllProducts,
   getSingleProduct,
+  getTopRatedProducts,
 } from "../controllers/productController.js";
 import {
   validateEditProductInput,
@@ -19,6 +20,7 @@ import {
 const router = Router();
 
 router.get("/", getAllProducts);
+router.get("/top", getTopRatedProducts);
 router.get("/:id", validateIdParams, getSingleProduct);
 router.post("/", authenticateUser, checkForAdmin, createNewProduct);
 router.put(

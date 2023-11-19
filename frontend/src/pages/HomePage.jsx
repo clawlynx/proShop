@@ -7,6 +7,7 @@ import Loading from "../components/Loading";
 import Message from "../components/Message";
 import { Link, useParams } from "react-router-dom";
 import Paginate from "../components/Paginate";
+import ProductCarousel from "../components/ProductCarousel";
 
 function HomePage() {
   const { pageNumber, keyword } = useParams();
@@ -17,7 +18,9 @@ function HomePage() {
   });
   return (
     <>
-      {keyword && (
+      {!keyword ? (
+        <ProductCarousel />
+      ) : (
         <Link to={"/"} className="btn btn-secondary mb-3">
           Go back
         </Link>
